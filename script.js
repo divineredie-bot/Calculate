@@ -1,44 +1,122 @@
-let display = document.querySelector(".display");
-let numButtons = document.querySelectorAll(".num");
-let operatorButtons = document.querySelectorAll(".operator");
-let clearButton = document.querySelector(".clear");
-let resultButton = document.querySelector(".result");
+const display = document.querySelector(".display");
+const numButtons = document.querySelectorAll(".num");
+const operatorButtons = document.querySelectorAll(".operator");
+const actionButtons = document.querySelectorAll(".action");
+const clearButton = document.querySelector(".clear");
+const resultButton = document.querySelector(".result");
 
+let currentValue = "";
 
-let currentValue = '';
-let previousValue = '';
-let operation = '';
-
-function updateDisplay(){
-    display.textContent = currentValue;
-    
+function updateDisplay() {
+    display.textContent = currentValue || "0";
 }
-numButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        //let num = button.textContent;
+
+function isOperator(char) {
+    return ["+", "-", "*", "/"].includes(char);
+}
+
+function evaluateExpression() {
+    if (!currentValue) {
+        return 0;
+    }
+
+    const normalizedValue = currentValue.replace(/\s+/g, "");
+
+    if (!/^[0-9+\-*/.]+$/.test(normalizedValue)) {
+        throw new Error("Invalid expression");
+    }
+
+    return Function(`"use strict"; return (${normalizedValue})`)();
+}
+
+function setError() {
+    currentValue = "Error";
+    updateDisplay();
+}
+
+numButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        if (currentValue === "Error") {
+            currentValue = "";
+        }
+
         currentValue += button.textContent;
         updateDisplay();
-        
-
     });
 });
 
-operatorButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        previousValue = currentValue;
-        operation = button.textContent;
-        currentValue += operation
+operatorButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        const operator = button.textContent;
+
+        if (currentValue === "Error") {
+            return;
+        }
+
+        if (!currentValue && operator !== "-") {
+            return;
+        }
+
+        if (isOperator(currentValue.slice(-1))) {
+            currentValue = currentValue.slice(0, -1) + operator;
+        } else {
+            currentValue += operator;
+        }
+
         updateDisplay();
-    }
-)
+    });
 });
 
-resultButton.addEventListener('click' , () => {
-        currentValue = eval(currentValue);
-        updateDisplay();
-    })
+actionButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        const action = button.dataset.action;
 
-clearButton.addEventListener('click', () =>{
-    currentValue = ""
+        try {
+            if (action === "random") {
+                currentValue = Math.random().toFixed(6);
+                updateDisplay();
+                return;
+            }
+
+            const value = evaluateExpression();
+
+            if (action === "round") {
+                currentValue = String(Math.round(value));
+            }
+
+            if (action === "sqrt") {
+                if (value < 0) {
+                    throw new Error("Negative root");
+                }
+
+                currentValue = String(Math.sqrt(value));
+            }
+
+            if (action === "square") {
+                currentValue = String(value ** 2);
+            }
+
+            if (action === "abs") {
+                currentValue = String(Math.abs(value));
+            }
+
+            updateDisplay();
+        } catch (error) {
+            setError();
+        }
+    });
+});
+
+resultButton.addEventListener("click", () => {
+    try {
+        currentValue = String(evaluateExpression());
+        updateDisplay();
+    } catch (error) {
+        setError();
+    }
+});
+
+clearButton.addEventListener("click", () => {
+    currentValue = "";
     updateDisplay();
-})
+});

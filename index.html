@@ -1,16 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Calculator</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="calculator">
     <div class="title">Кальк<span>улятор</span></div>
-    <div class="display"></div>
+    <div class="display">0</div>
     <div class="buttons">
+      <button class="action" data-action="round">round</button>
+      <button class="action" data-action="sqrt">sqrt</button>
+      <button class="action" data-action="square">x²</button>
+      <button class="action" data-action="abs">|x|</button>
+
       <button class="num">7</button>
       <button class="num">8</button>
       <button class="num">9</button>
@@ -30,6 +35,8 @@
       <button class="num">0</button>
       <button class="operator">+</button>
       <button class="result">=</button>
+
+      <button class="action action-wide" data-action="random">rand</button>
     </div>
   </main>
   <script src="script.js"></script>

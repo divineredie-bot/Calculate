@@ -82,12 +82,20 @@ button:active {
     background-color: rgb(222, 242, 255);
 }
 
+.action {
+    background-color: rgb(233, 239, 216);
+}
+
 .result {
     background-color: rgb(104, 254, 254);
 }
 
 .clear {
     background-color: rgb(255, 108, 108);
+}
+
+.action-wide {
+    grid-column: span 4;
 }
 
 @media (max-width: 480px) {
